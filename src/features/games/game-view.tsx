@@ -102,9 +102,10 @@ export function GameView() {
     if (error) {
       toast.error('Partita non trovata')
       navigate({ to: '/' })
-      return
+      return null
     }
     setGame(data)
+    return data
   }, [gameId, navigate])
 
   const fetchMoves = useCallback(async () => {
@@ -124,10 +125,16 @@ export function GameView() {
 
   useEffect(() => {
     async function init() {
-      await fetchGame()
+      const fetchedGame = await fetchGame()
       const fetchedMoves = await fetchMoves()
-      if (fetchedMoves && fetchedMoves.length > 0) {
-        setCurrentMoveIndex(0)
+      if (fetchedGame && fetchedMoves && fetchedMoves.length > 0) {
+        if (fetchedGame.status === 'in_progress') {
+          setCurrentMoveIndex(fetchedMoves.length - 1)
+        } else {
+          setCurrentMoveIndex(-1)
+        }
+      } else {
+        setCurrentMoveIndex(-1)
       }
       setLoading(false)
     }
