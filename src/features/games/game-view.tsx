@@ -333,9 +333,6 @@ export function GameView() {
                       <ChevronLast className='h-4 w-4' />
                     </Button>
                   </div>
-                  <p className='mt-3 text-center text-sm text-muted-foreground'>
-                    Mossa {currentMoveIndex + 1} di {moves.length}
-                  </p>
                   <p className='mt-1 text-center text-xs text-muted-foreground'>
                     Usa ← → per navigare
                   </p>

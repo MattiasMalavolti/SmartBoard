@@ -40,11 +40,6 @@ export const sidebarData: SidebarData = {
           icon: Settings,
           items: [
             {
-              title: 'Profilo',
-              url: '/settings',
-              icon: UserCog,
-            },
-            {
               title: 'Aspetto',
               url: '/settings/appearance',
               icon: Palette,
