@@ -24,6 +24,7 @@ import { ThemeSwitch } from '@/components/theme-switch'
 interface Game {
   id: string
   title: string
+  winner: string | null
   status: 'in_progress' | 'completed'
   created_at: string
 }

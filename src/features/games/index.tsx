@@ -59,6 +59,7 @@ import { ThemeSwitch } from '@/components/theme-switch'
 interface Game {
   id: string
   title: string
+  winner: string | null
   status: 'in_progress' | 'completed'
   created_at: string
   user_id: string
@@ -102,7 +103,7 @@ export function Games() {
     return () => {
       supabase.removeChannel(channel)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   async function fetchGames() {
@@ -146,6 +147,13 @@ export function Games() {
 
       const whiteMatch = text.match(/\[White\s+"([^"]+)"\]/)
       const blackMatch = text.match(/\[Black\s+"([^"]+)"\]/)
+      const resultMatch = text.match(/\[Result\s+"([^"]+)"\]/)
+      const resultTag = resultMatch?.[1] ?? '*'
+      let winner: string | null = null
+      if (resultTag === '1-0') winner = 'white'
+      else if (resultTag === '0-1') winner = 'black'
+      else if (resultTag === '1/2-1/2') winner = 'draw'
+
       const white = whiteMatch?.[1] ?? 'Bianco'
       const black = blackMatch?.[1] ?? 'Nero'
       const title = `${white} vs ${black}`
@@ -170,7 +178,7 @@ export function Games() {
 
       const { data: gameData, error: gameError } = await supabase
         .from('games')
-        .insert({ user_id: user!.id, title, status: 'completed' })
+        .insert({ user_id: user!.id, title, winner, status: 'completed' })
         .select('id')
         .single()
 
@@ -335,6 +343,7 @@ export function Games() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Titolo</TableHead>
+                      <TableHead>Vincitore</TableHead>
                       <TableHead>Stato</TableHead>
                       <TableHead>Data</TableHead>
                       <TableHead className='text-right'>Azioni</TableHead>
@@ -345,6 +354,23 @@ export function Games() {
                       <TableRow key={game.id}>
                         <TableCell className='font-medium'>
                           {game.title}
+                        </TableCell>
+                        <TableCell>
+                          {game.winner === 'white' ? (
+                            <Badge className='bg-white text-black hover:bg-white border-slate-200'>
+                              1 - 0
+                            </Badge>
+                          ) : game.winner === 'black' ? (
+                            <Badge className='bg-black text-white hover:bg-black border-black'>
+                              0 - 1
+                            </Badge>
+                          ) : game.winner === 'draw' ? (
+                            <Badge className='bg-slate-500 text-white hover:bg-slate-500 border-slate-500'>
+                              ½
+                            </Badge>
+                          ) : (
+                            <span className='text-muted-foreground'>—</span>
+                          )}
                         </TableCell>
                         <TableCell>
                           {game.status === 'in_progress' ? (
